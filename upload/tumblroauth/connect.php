@@ -5,7 +5,7 @@
 session_start();
 
 // Include the TumblrOAuth library
-require_once('tumblroauth.php');
+require_once('tumblroauth/tumblroauth.php');
 
 // Define the needed keys
 $consumer_key = "BQBZcyujDME2DMgP5V7mUFo2FglhxYwk6jJy6BOTy5dflTODDf";
@@ -13,7 +13,7 @@ $consumer_secret = "S6PG7n0xjqAVjd9Iul0YACP6eky3tWLBTZeyUEMH1mGEZNExId";
 
 // The callback URL is the script that gets called after the user authenticates with tumblr
 // In this example, it would be the included callback.php
-$callback_url = "PUT A CALLBACK URL HERE";
+$callback_url = "http://localhost:8888/mcr/upload/tumblroauth/callback.php";
 
 // Let's begin.  First we need a Request Token.  The request token is required to send the user
 // to Tumblr's login page.
@@ -26,8 +26,8 @@ $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret);
 $request_token = $tum_oauth->getRequestToken($callback_url);
 
 // Store the request token and Request Token Secret as out callback.php script will need this
-echo $token = $request_token['oauth_token'].'<br>';
-echo $request_token['oauth_token_secret'];
+$_SESSION['request_token'] = $token = $request_token['oauth_token'];
+$_SESSION['request_token_secret'] = $request_token['oauth_token_secret'];
 
 // Check the HTTP Code.  It should be a 200 (OK), if it's anything else then something didn't work.
 switch ($tum_oauth->http_code) {

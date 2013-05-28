@@ -1,28 +1,45 @@
-$(document).ready(function(){
+function getCampaign () {
+	jQuery.ajax({
+  	url : url_prefix + "get_current_campaign.php",
+  	success : function (data) {
+		jQuery('#current-campaign').html(data);
+	}
+  });
+}
 
-	$('button').click(function (){
-		// $.ajax({
-// 		  type: "GET",
-// 		  url: "http://api.tumblr.com/v2/blog/markcurtisreport.tumblr.com/posts/photo?api_key=BQBZcyujDME2DMgP5V7mUFo2FglhxYwk6jJy6BOTy5dflTODDf&limit=1",
-// 		  dataType: "jsonp",
-// 		  success: function (data) {
-// 			console.log(data.response.posts[0].photos);
-// 		  },
-// 		});
+jQuery(document).ready(function(){
+	
+	jQuery('#loading-div').hide();
+	jQuery('#done-div').hide();
+	
+	jQuery('button').click(function (){
 		myDropzone.processQueue();
 	});
 	
-
-	
-	var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
-    	url: "upload/", // Set the url
-	    previewsContainer: "#fileDropTarget", // Define the container to display the previews
+	var myDropzone = new Dropzone(document.body, { 
+    	url: url_prefix + 'index.php', 
+	    previewsContainer: "#fileDropTarget", 
     	enqueueForUpload: false
 	});	
 	
 	myDropzone.on("addedfile", function(file) {
 		myDropzone.filesQueue.push(file);
 	});
+	
+	myDropzone.on("sending", function(file) {
+		jQuery('#loading-div').show()
+		jQuery('button').attr('disabled','disabled');
+	});
+	myDropzone.on("complete", function(file) {
+		jQuery('#loading-div').hide()
+        jQuery('button').removeAttr('disabled');
+        jQuery('#fileDropTarget').html('');
+        getCampaign ();
+        jQuery('#done-div').show();
+        setInterval(function(){jQuery('#done-div').fadeOut('fast');},1000);
+    });
+    
+	getCampaign ();
 	
 });
 
